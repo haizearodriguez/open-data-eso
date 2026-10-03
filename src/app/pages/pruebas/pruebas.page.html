@@ -1,0 +1,188 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Pruebas: metadatos
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <h1>Metadatos EUSTAT</h1>
+
+  <p>
+    Un botón por tabla. Pulsa para pedir sus metadatos reales
+    (GET) y ver los códigos de variable/valor tal cual los
+    devuelve EUSTAT.
+  </p>
+
+  @for (tabla of tablas; track tabla) {
+
+    @if (estadoPorTabla$[tabla] | async; as estado) {
+
+      <ion-card>
+
+        <ion-card-header>
+          <ion-card-title>
+            {{ etiquetaTabla[tabla] }}
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <ion-button
+            size="small"
+            [disabled]="estado.cargando"
+            (click)="verMetadatos(tabla)"
+          >
+            @if (estado.cargando) {
+              Cargando...
+            } @else {
+              Ver metadatos
+            }
+          </ion-button>
+
+          @if (estado.error) {
+            <p class="error">
+              {{ estado.error }}
+            </p>
+          }
+
+          @if (estado.variables.length > 0) {
+
+            <table class="tabla-variables">
+              <thead>
+                <tr>
+                  <th>variable (code)</th>
+                  <th>nº valores</th>
+                  <th>primeros códigos</th>
+                  <th>primeros textos</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (variable of estado.variables; track variable.code) {
+                  <tr>
+                    <td>{{ variable.code }}</td>
+                    <td>{{ variable.numValores }}</td>
+                    <td>{{ variable.primerosValores }}</td>
+                    <td>{{ variable.primerosTextos }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            <ion-button
+              fill="clear"
+              size="small"
+              (click)="toggleJsonCompleto(tabla)"
+            >
+              @if (mostrarJsonCompleto[tabla]) {
+                Ocultar JSON completo
+              } @else {
+                Ver JSON completo
+              }
+            </ion-button>
+
+            @if (mostrarJsonCompleto[tabla]) {
+              <pre class="json-completo">{{ jsonBonito(estado.datos) }}</pre>
+            }
+          }
+
+        </ion-card-content>
+
+      </ion-card>
+    }
+  }
+
+
+  <h1>Centros (Open Data Euskadi)</h1>
+
+  <p>
+    Carga centros y prueba, para cualquiera de ellos, cada una de
+    las 3 tablas de zona con su <code>municipioCodigo</code> real.
+    La query se construye a partir de los metadatos ya cargados
+    arriba (si no los has pedido todavía, se piden automáticamente
+    al pulsar).
+  </p>
+
+  @if (estadoCentros$ | async; as estadoCentros) {
+
+    <ion-button
+      size="small"
+      [disabled]="estadoCentros.cargando"
+      (click)="cargarCentros()"
+    >
+      @if (estadoCentros.cargando) {
+        Cargando...
+      } @else {
+        Cargar centros (primeros 20)
+      }
+    </ion-button>
+
+    @if (estadoCentros.error) {
+      <p class="error">
+        {{ estadoCentros.error }}
+      </p>
+    }
+
+    @if (estadoCentros.centros.length > 0) {
+
+      <table class="tabla-variables">
+        <thead>
+          <tr>
+            <th>centro</th>
+            <th>municipio (texto)</th>
+            <th>municipioCodigo (INE)</th>
+            <th colspan="3">probar tabla</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (centro of estadoCentros.centros; track centro.id) {
+            <tr>
+              <td>{{ centro.nombre }}</td>
+              <td>{{ centro.municipio }}</td>
+              <td>{{ centro.municipioCodigo }}</td>
+              @for (tabla of tablas; track tabla) {
+                <td>
+                  <ion-button
+                    size="small"
+                    fill="outline"
+                    (click)="probarTablaZona(tabla, centro)"
+                  >
+                    {{ etiquetaTabla[tabla] }}
+                  </ion-button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+
+  @for (tabla of tablas; track tabla) {
+
+    @if (estadoZona$[tabla] | async; as estadoZona) {
+
+      @if (estadoZona.cargando) {
+        <p>Consultando {{ etiquetaTabla[tabla] }} (vía proxy)...</p>
+      }
+
+      @if (estadoZona.error) {
+        <p class="error">
+          Error [{{ etiquetaTabla[tabla] }}] para {{ estadoZona.centro?.nombre }}
+          ({{ estadoZona.centro?.municipioCodigo }}): {{ estadoZona.error }}
+        </p>
+      }
+
+      @if (estadoZona.resultado) {
+        <h2>
+          {{ etiquetaTabla[tabla] }} — {{ estadoZona.centro?.nombre }}
+          ({{ estadoZona.centro?.municipio }}, {{ estadoZona.centro?.municipioCodigo }})
+        </h2>
+        <pre class="json-completo">{{ jsonBonito(estadoZona.resultado) }}</pre>
+      }
+    }
+  }
+
+</ion-content>

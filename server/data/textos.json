@@ -1,0 +1,22 @@
+[
+  {
+    "id": "demo-es-01",
+    "titulo": "La edad del diablo",
+    "texto": "Un arlote, probablemente por dinero, vendió su alma al diablo. El pobre andaba lleno de miedo aterrado, cuando a este contrato se le acercó el plazo. El diablo le dijo una vez:\n—Si aciertas cuántos años tengo yo, te dejaré libre.\nEl hombre andaba noche y día quebrándose la cabeza, no pudiendo calcular los años del Malvado. Para esto, se aconsejó con todos los eruditos y sabios de la comarca, y todo en vano. Cuanto más cerca el plazo, tanto estaba el arlote más apurado y acongojado. Una vez se le presentó una anciana y le preguntó qué le tenía tan apurado.\n—Tengo vendida el alma y no puedo en manera alguna acertar el único medio de librarme. Este medio es saber cuántos años tiene el diablo.\n—Ve tú a casa, rapazuelo, y deja esta tarea a mi encargo.\nDe allí a poco se presentó el diablo a la anciana. Ésta, desde poco antes yacía en tierra, popa al aire. El diablo, prorrumpiendo en grandes carcajadas, dijo:\n—Tengo ciento cincuenta años, pero otro tanto no he visto jamás.\nSabiéndolo así, pudo librarse el vendedor del alma.",
+    "idioma": "es",
+    "nivel": "2ESO",
+    "tema": "Cuentos magicos III",
+    "genero": "narrativa",
+    "longitud": 186
+  },
+  {
+    "id": "demo-eu-01",
+    "titulo": "Txerrenen adina",
+    "texto": "Arlote batek, diruagaitik aurki, arimea Txerreni saldu eutsan. Egiune oni epea urreratu dakanean, bildurrak jota ebilen gaixoa. Txerrenek bein esan eutsan:\n—Neuk zenbat urte daukadan igarri badagik, jara egingo aut.\nGizon au gau ta egun burua austen ebilen, Gaizkinaren urteak ainbatu ezinik. Inguruko burutsu ta yakitun guztiakaz itundu zan onetarako ta alperrik guztia. Epea urrago ta arlotea larriago, arminago egoan. Atso bat argitu dakon bein ta ain larri zek eukan itandu eutsan.\n—Arimea salduta daukat eta ezetara ezin igarri dot neure yarabide bakarra. Txerrenek zenbat urte dituan yakitea da yarabide au.\n—Oa i etxera, mirrin ori; ta itxik neure kabura arazo au.\nArik lasterko agertu Jakon Txerren atsoari. Atsoa lentxoagorik popaz gora lurrean zetzan. Txerrenek barre zantzo andiak eginaz, esan eban:\n—Eun ta berrogei ta amar urte daukanat; baina etxonat beste onenbeste inoiz ikusi.\nOnelantxe yakinda, yara egin eban bere burua arima saltzaileak.",
+    "idioma": "eu",
+    "nivel": "2ESO",
+    "tema": "Ipuin magikoak III",
+    "genero": "narrativa",
+    "longitud": 143
+  }
+]

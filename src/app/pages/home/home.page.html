@@ -1,0 +1,57 @@
+@if (idioma$ | async; as idioma) {
+
+  @let t = textoHome(idioma);
+
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>{{ t.tituloPagina }}</ion-title>
+      <app-selector-idioma slot="end"></app-selector-idioma>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+
+    <!-- Sin perfil todavía -->
+    @if (!perfil) {
+      <div class="paso-centrado">
+        <h2>{{ t.sinPerfilTitulo }}</h2>
+        <p>{{ t.sinPerfilTexto }}</p>
+        <ion-button expand="block" (click)="irAlOnboarding()">{{ t.crearPerfil }}</ion-button>
+      </div>
+    }
+
+    @if (perfil) {
+      <h1 class="saludo">{{ t.saludo }}, {{ perfil.centroNombre }} · {{ perfil.curso }}º {{ perfil.grupo }}</h1>
+
+      <div class="tarjetas">
+        @for (tarjeta of tarjetas; track tarjeta.materia) {
+          <div
+            class="tarjeta"
+            [class.disponible]="tarjeta.disponible"
+            [class.proximamente]="!tarjeta.disponible"
+            (click)="irAMateria(tarjeta)"
+          >
+            <div class="cabecera">
+              <h2>{{ t.materias[tarjeta.materia] }}</h2>
+              @if (!tarjeta.disponible) {
+                <ion-badge color="medium">{{ t.proximamente }}</ion-badge>
+              }
+            </div>
+
+            @if (tarjeta.disponible && tarjeta.resumen) {
+              @if (tarjeta.resumen.numResultados === 0) {
+                <p class="progreso">{{ t.sinEjercicios }}</p>
+              } @else {
+                <p class="progreso">
+                  {{ t.conEjercicios(tarjeta.resumen.numResultados, tarjeta.resumen.porcentajeAciertos) }}
+                </p>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+
+  </ion-content>
+
+}

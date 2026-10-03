@@ -1,0 +1,19 @@
+@if (idioma$ | async; as idioma) {
+  <div class="selector-idioma">
+    <button
+      type="button"
+      [class.activo]="idioma === 'es'"
+      (click)="elegir('es')"
+    >
+      ES
+    </button>
+    <span class="separador">/</span>
+    <button
+      type="button"
+      [class.activo]="idioma === 'eu'"
+      (click)="elegir('eu')"
+    >
+      EUS
+    </button>
+  </div>
+}

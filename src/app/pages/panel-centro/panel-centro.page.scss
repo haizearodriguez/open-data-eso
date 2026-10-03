@@ -1,0 +1,47 @@
+.paso-centrado {
+  text-align: center;
+  margin-top: 30%;
+}
+
+.error {
+  color: var(--ion-color-danger);
+  font-size: 14px;
+}
+
+.login {
+  h1 {
+    margin-bottom: 4px;
+  }
+
+  .explicacion {
+    color: var(--ion-color-medium);
+    font-size: 13px;
+    margin: 0 0 20px;
+    line-height: 1.4;
+  }
+}
+
+.panel {
+  .centro-nombre {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .explicacion {
+    color: var(--ion-color-medium);
+    font-size: 13px;
+    margin: 2px 0 16px;
+  }
+
+  .etiqueta {
+    color: var(--ion-color-medium);
+    font-size: 13px;
+  }
+
+  .num-resultados {
+    font-size: 13px;
+    color: var(--ion-color-medium);
+    font-weight: 400;
+  }
+}

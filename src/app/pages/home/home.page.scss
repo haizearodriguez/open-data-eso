@@ -1,0 +1,50 @@
+.paso-centrado {
+  text-align: center;
+  margin-top: 30%;
+}
+
+.saludo {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.tarjetas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tarjeta {
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--ion-color-light-shade);
+
+  .cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+  .progreso {
+    margin: 8px 0 0;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+
+  &.disponible {
+    cursor: pointer;
+
+    &:active {
+      background: var(--ion-color-light);
+    }
+  }
+
+  &.proximamente {
+    opacity: 0.6;
+  }
+}

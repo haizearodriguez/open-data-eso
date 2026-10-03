@@ -1,0 +1,208 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mi perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  @if (estado$ | async; as estado) {
+
+    <!-- Paso 0: elegir entre crear perfil nuevo o recuperar uno con código -->
+    @if (estado.paso === 'inicio') {
+      <div class="paso-centrado">
+        <h1>¡Hola! 👋</h1>
+        <p>¿Es tu primera vez aquí o ya tienes un perfil?</p>
+
+        <ion-button expand="block" (click)="irAFormulario()">Crear mi perfil</ion-button>
+        <ion-button expand="block" fill="outline" (click)="irARecuperar()">Ya tengo un código</ion-button>
+      </div>
+    }
+
+    <!-- Paso "recuperar": introducir el código de un perfil ya creado -->
+    @if (estado.paso === 'recuperar' || estado.paso === 'recuperando') {
+      <div class="formulario">
+        <section class="bloque">
+          <h2>Recupera tu perfil</h2>
+          <p class="explicacion">
+            Escribe el código que guardaste al crear tu perfil (por ejemplo, ABC-123).
+          </p>
+
+          <ion-item lines="full">
+            <ion-input
+              [(ngModel)]="codigoRecuperar"
+              placeholder="ABC-123"
+              [disabled]="estado.paso === 'recuperando'"
+              (keyup.enter)="recuperarPerfil()"
+            ></ion-input>
+          </ion-item>
+
+          @if (estado.error) {
+            <p class="error">{{ estado.error }}</p>
+          }
+
+          <ion-button
+            expand="block"
+            class="ion-margin-top"
+            [disabled]="!codigoRecuperar.trim() || estado.paso === 'recuperando'"
+            (click)="recuperarPerfil()"
+          >
+            @if (estado.paso === 'recuperando') {
+              <ion-spinner name="dots"></ion-spinner>
+            } @else {
+              Recuperar perfil
+            }
+          </ion-button>
+
+          <ion-button expand="block" fill="clear" (click)="volverAInicio()">Volver</ion-button>
+        </section>
+      </div>
+    }
+
+    <!-- Paso 1: formulario, todo en una pantalla -->
+    @if (estado.paso === 'formulario') {
+      <div class="formulario">
+
+        <ion-button fill="clear" size="small" class="volver-inicio" (click)="volverAInicio()">
+          ← Volver
+        </ion-button>
+
+        <section class="bloque">
+          <h2>¿En qué centro estudias?</h2>
+          <p class="explicacion">
+            Lo usamos para calcular, con datos públicos de tu zona (EUSTAT), un
+            punto de partida razonable para tus primeras lecturas -- nunca
+            compartimos tus respuestas ni datos personales con nadie.
+          </p>
+
+          <ion-item lines="full">
+            <ion-searchbar
+              placeholder="Buscar centro..."
+              [value]="centroSeleccionado?.nombre"
+              (ionInput)="buscarCentro($event)"
+            ></ion-searchbar>
+          </ion-item>
+
+          @if (resultadosCentro.length) {
+            <ion-list>
+              @for (centro of resultadosCentro; track centro.id) {
+                <ion-item button (click)="seleccionarCentro(centro)">
+                  <ion-label>
+                    {{ centro.nombre }}
+                    <p>{{ centro.municipio }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          }
+
+          @if (centroSeleccionado && !resultadosCentro.length) {
+            <p class="seleccionado">✓ {{ centroSeleccionado.nombre }}</p>
+          }
+        </section>
+
+        <section class="bloque">
+          <h2>¿Curso y grupo?</h2>
+          <p class="explicacion">Así te mostramos lecturas y ejercicios del nivel que te toca.</p>
+
+          <ion-item lines="full">
+            <ion-label position="stacked">Curso</ion-label>
+            <ion-select [(ngModel)]="curso" placeholder="Selecciona curso">
+              @for (c of cursos; track c.valor) {
+                <ion-select-option [value]="c.valor">{{ c.etiqueta }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label position="stacked">Grupo</ion-label>
+            <ion-select [(ngModel)]="grupo" placeholder="Selecciona grupo">
+              @for (g of grupos; track g) {
+                <ion-select-option [value]="g">{{ g }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        </section>
+
+        <section class="bloque">
+          <h2>¿Modelo lingüístico?</h2>
+          <p class="explicacion">Con esto elegimos si tus lecturas y ejercicios son en castellano o en euskera.</p>
+
+          <div class="modelo-botones">
+            @for (m of modelos; track m) {
+              <ion-button
+                [fill]="modeloLinguistico === m ? 'solid' : 'outline'"
+                (click)="seleccionarModelo(m)"
+              >
+                {{ m }}
+              </ion-button>
+            }
+          </div>
+        </section>
+
+        @if (estado.error) {
+          <p class="error">{{ estado.error }}</p>
+        }
+
+        <ion-button
+          expand="block"
+          class="ion-margin-top"
+          [disabled]="!formularioValido"
+          (click)="crearPerfil()"
+        >
+          Crear perfil
+        </ion-button>
+
+      </div>
+    }
+
+    <!-- Paso 2: calculando (llamadas a EUSTAT en curso) -->
+    @if (estado.paso === 'calculando') {
+      <div class="paso-centrado">
+        <ion-spinner></ion-spinner>
+        <p>Calculando tu punto de partida...</p>
+        <p class="explicacion">
+          Estamos comparando datos públicos de tu zona (EUSTAT) para ajustar
+          el nivel de tus primeras lecturas. Un momento.
+        </p>
+      </div>
+    }
+
+    <!-- Paso 3: bienvenida -->
+    @if (estado.paso === 'bienvenida') {
+      <div class="paso-centrado">
+        <h1>{{ saludo(estado.perfilCreado?.modeloLinguistico) }} 👋</h1>
+        @if (estado.origenPerfil === 'recuperado') {
+          <p>Hemos recuperado tu perfil. ¿Seguimos?</p>
+        } @else {
+          <p>Tu perfil ya está listo. ¿Empezamos?</p>
+        }
+        <ion-button expand="block" (click)="empezar()">Empezar</ion-button>
+      </div>
+    }
+
+    <!-- Paso 4: código de recuperación -->
+    @if (estado.paso === 'codigo') {
+      <div class="paso-centrado">
+        <h2>Tu perfil está listo</h2>
+        <p>Guarda este código -- lo necesitarás para recuperar tu perfil si cambias de dispositivo:</p>
+
+        <div class="codigo">{{ estado.perfilCreado?.codigo }}</div>
+
+        <ion-button fill="outline" (click)="copiarCodigo(estado.perfilCreado!.codigo)">
+          @if (copiado$ | async) {
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            Copiado
+          } @else {
+            <ion-icon name="copy-outline" slot="start"></ion-icon>
+            Copiar código
+          }
+        </ion-button>
+
+        <ion-button expand="block" class="ion-margin-top" (click)="continuar()">Continuar</ion-button>
+      </div>
+    }
+
+  }
+
+</ion-content>

@@ -1,0 +1,145 @@
+@if (estado$ | async; as estado) {
+
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>{{ titulo }}</ion-title>
+      @if (estado.paso === 'respondiendo') {
+        <ion-button slot="end" fill="clear" (click)="salir()">
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      }
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+
+    <!-- Sin perfil todavía -->
+    @if (estado.paso === 'sin-perfil') {
+      <div class="paso-centrado">
+        <h2>Todavía no tienes perfil</h2>
+        <p>Necesitas crear tu perfil antes de empezar.</p>
+        <ion-button expand="block" (click)="irAlOnboarding()">Crear mi perfil</ion-button>
+      </div>
+    }
+
+    <!-- Generando ejercicios -->
+    @if (estado.paso === 'cargando') {
+      <div class="paso-centrado">
+        <ion-spinner></ion-spinner>
+        <p>Preparando tus ejercicios de {{ titulo.toLowerCase() }}...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (estado.paso === 'error') {
+      <div class="paso-centrado">
+        <p class="error">{{ estado.error }}</p>
+        <ion-button expand="block" (click)="reintentar()">Reintentar</ion-button>
+      </div>
+    }
+
+    <!-- Respondiendo -->
+    @if (estado.paso === 'respondiendo') {
+      <div class="preguntas">
+
+        <div class="progreso">
+          <span class="progreso-texto">Pregunta {{ estado.indicePregunta + 1 }} de {{ estado.preguntas.length }}</span>
+          <div class="progreso-puntos">
+            @for (pregunta of estado.preguntas; track pregunta.id; let i = $index) {
+              <span
+                class="punto"
+                [class.activo]="i === estado.indicePregunta"
+                [class.contestado]="estado.respuestas[i] !== null"
+              ></span>
+            }
+          </div>
+        </div>
+
+        @let pregunta = estado.preguntas[estado.indicePregunta];
+        <div class="pregunta">
+          <p class="enunciado">{{ pregunta.enunciado }}</p>
+
+          <ion-radio-group
+            [value]="estado.respuestas[estado.indicePregunta]"
+            (ionChange)="seleccionarRespuesta(estado.indicePregunta, $event.detail.value)"
+          >
+            @for (opcion of pregunta.opciones; track $index; let j = $index) {
+              <ion-item lines="none">
+                <ion-radio [value]="j" justify="start" labelPlacement="end">
+                  {{ opcion }}
+                </ion-radio>
+              </ion-item>
+            }
+          </ion-radio-group>
+        </div>
+
+        <div class="navegacion-preguntas">
+          @if (estado.indicePregunta > 0) {
+            <ion-button fill="outline" (click)="anteriorPregunta()">
+              <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+              Anterior
+            </ion-button>
+          }
+
+          @if (!esUltimaPregunta(estado)) {
+            <ion-button
+              [disabled]="estado.respuestas[estado.indicePregunta] === null"
+              (click)="siguientePregunta()"
+            >
+              Siguiente
+              <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+            </ion-button>
+          } @else {
+            <ion-button
+              color="success"
+              [disabled]="!todasContestadas(estado)"
+              (click)="corregir()"
+            >
+              Corregir
+            </ion-button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Corregido -->
+    @if (estado.paso === 'corregido') {
+      <div class="correccion">
+        <h2 class="paso-centrado">
+          {{ estado.aciertos }} de {{ estado.preguntas.length }} correctas
+        </h2>
+        <p class="mensaje-tono">{{ estado.mensaje }}</p>
+
+        <ion-list>
+          @for (pregunta of estado.preguntas; track pregunta.id; let i = $index) {
+            <ion-item
+              lines="full"
+              [class.acierto]="estado.respuestas[i] === pregunta.respuestaCorrecta"
+              [class.fallo]="estado.respuestas[i] !== pregunta.respuestaCorrecta"
+            >
+              <ion-label class="ion-text-wrap">
+                <p class="enunciado">{{ i + 1 }}. {{ pregunta.enunciado }}</p>
+                <p>Tu respuesta: {{ pregunta.opciones[estado.respuestas[i]!] }}</p>
+                @if (estado.respuestas[i] !== pregunta.respuestaCorrecta) {
+                  <p>Correcta: {{ pregunta.opciones[pregunta.respuestaCorrecta] }}</p>
+                }
+                @if (pregunta.explicacion) {
+                  <blockquote class="explicacion">{{ pregunta.explicacion }}</blockquote>
+                }
+              </ion-label>
+            </ion-item>
+          }
+        </ion-list>
+
+        <ion-button expand="block" class="ion-margin-top" (click)="otraTanda()">
+          Otra tanda de ejercicios
+        </ion-button>
+        <ion-button expand="block" fill="outline" (click)="irAHome()">
+          Volver al inicio
+        </ion-button>
+      </div>
+    }
+
+  </ion-content>
+
+}

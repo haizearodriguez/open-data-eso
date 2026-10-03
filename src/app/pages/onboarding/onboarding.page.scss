@@ -1,0 +1,64 @@
+.paso-centrado {
+  text-align: center;
+  margin-top: 30%;
+}
+
+.volver-inicio {
+  margin: 0 0 8px;
+  --padding-start: 0;
+}
+
+.paso-centrado {
+  ion-button {
+    margin-top: 8px;
+  }
+}
+
+.bloque {
+  margin-bottom: 24px;
+
+  h2 {
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+}
+
+.explicacion {
+  color: var(--ion-color-medium);
+  font-size: 13px;
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.seleccionado {
+  color: var(--ion-color-success);
+  font-size: 14px;
+  margin: 6px 0 0;
+}
+
+.codigo {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin: 16px 0;
+}
+
+.aviso {
+  color: var(--ion-color-medium);
+  font-size: 14px;
+}
+
+.error {
+  color: var(--ion-color-danger);
+  font-size: 14px;
+}
+
+.modelo-botones {
+  display: flex;
+  gap: 8px;
+
+  ion-button {
+    flex: 1;
+    margin: 0;
+  }
+}

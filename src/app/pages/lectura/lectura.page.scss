@@ -1,0 +1,151 @@
+.paso-centrado {
+  text-align: center;
+  margin-top: 30%;
+}
+
+.error {
+  color: var(--ion-color-danger);
+  font-size: 14px;
+}
+
+.texto-lectura {
+  .cabecera-texto {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .idioma-badge {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    border: 1px solid var(--ion-color-medium);
+    border-radius: 12px;
+    padding: 2px 10px;
+    margin: 0;
+  }
+
+  .control-fuente {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    .etiqueta-fuente {
+      font-size: 13px;
+      color: var(--ion-color-medium);
+      padding: 0 2px;
+    }
+  }
+
+  h1 {
+    margin-top: 4px;
+  }
+
+  // Modo lectura: tipografía amplia, interlineado generoso y fondo
+  // ligeramente cálido en vez de blanco puro -- más cómodo para
+  // sesiones largas y para alumnado con dislexia.
+  .cuerpo-texto {
+    background: var(--ion-color-light, #f7f5f0);
+    border-radius: 12px;
+    padding: 16px;
+
+    p {
+      line-height: 1.7;
+      letter-spacing: 0.1px;
+      margin-bottom: 1em;
+    }
+  }
+}
+
+.preguntas {
+  .progreso {
+    margin-bottom: 12px;
+
+    .progreso-texto {
+      display: block;
+      font-size: 13px;
+      color: var(--ion-color-medium);
+      margin-bottom: 6px;
+    }
+
+    .progreso-puntos {
+      display: flex;
+      gap: 6px;
+    }
+
+    .punto {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--ion-color-light-shade, #d7d8da);
+
+      &.contestado {
+        background: var(--ion-color-success);
+      }
+
+      &.activo {
+        outline: 2px solid var(--ion-color-primary);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .volver-texto {
+    margin: 0 0 8px;
+    --padding-start: 0;
+  }
+
+  .pregunta {
+    margin-bottom: 16px;
+  }
+
+  .enunciado {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 17px;
+  }
+
+  .navegacion-preguntas {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+
+    ion-button {
+      flex: 1;
+    }
+  }
+}
+
+.correccion {
+  .mensaje-tono {
+    text-align: center;
+    color: var(--ion-color-medium-shade);
+    margin-top: -4px;
+    margin-bottom: 16px;
+  }
+
+  ion-item {
+    &.acierto {
+      --background: rgba(var(--ion-color-success-rgb), 0.08);
+    }
+
+    &.fallo {
+      --background: rgba(var(--ion-color-danger-rgb), 0.08);
+    }
+  }
+
+  .enunciado {
+    font-weight: 600;
+  }
+
+  .cita-texto {
+    margin: 6px 0 0;
+    padding-left: 10px;
+    border-left: 3px solid var(--ion-color-medium);
+    font-style: italic;
+    color: var(--ion-color-medium-shade);
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,183 @@
+@if (idioma$ | async; as idioma) {
+@if (estado$ | async; as estado) {
+
+  @let t = textoLectura(idioma);
+
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>{{ t.tituloPagina }}</ion-title>
+      <app-selector-idioma slot="end"></app-selector-idioma>
+      @if (estado.paso === 'respondiendo' || estado.paso === 'leyendo') {
+        <ion-button slot="end" fill="clear" (click)="salir()">
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      }
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+
+      @if (estado.paso === 'sin-perfil') {
+        <div class="paso-centrado">
+          <h2>{{ t.sinPerfilTitulo }}</h2>
+          <p>{{ t.sinPerfilTexto }}</p>
+          <ion-button expand="block" (click)="irAlOnboarding()">{{ t.crearPerfil }}</ion-button>
+        </div>
+      }
+
+      @if (estado.paso === 'cargando') {
+        <div class="paso-centrado">
+          <ion-spinner></ion-spinner>
+          <p>{{ t.cargando }}</p>
+        </div>
+      }
+
+      @if (estado.paso === 'error') {
+        <div class="paso-centrado">
+          <p class="error">{{ estado.error || t.errorGenerico }}</p>
+          <ion-button expand="block" (click)="reintentar()">{{ t.reintentar }}</ion-button>
+        </div>
+      }
+
+      @if (estado.paso === 'leyendo' && estado.texto) {
+        <div class="texto-lectura">
+          <div class="cabecera-texto">
+            <p class="idioma-badge">{{ estado.texto.idioma === 'eu' ? 'Euskera' : 'Castellano' }}</p>
+
+            <div class="control-fuente">
+              <ion-button fill="clear" size="small" (click)="disminuirFuente()" aria-label="Reducir tamaño de letra">
+                <ion-icon slot="icon-only" name="remove-outline"></ion-icon>
+              </ion-button>
+              <span class="etiqueta-fuente">Aa</span>
+              <ion-button fill="clear" size="small" (click)="aumentarFuente()" aria-label="Aumentar tamaño de letra">
+                <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <h1>{{ estado.texto.titulo }}</h1>
+
+          <div class="cuerpo-texto" [style.fontSize.px]="tamanoFuente">
+            @for (parrafo of estado.texto.texto.split('\n'); track $index) {
+              @if (parrafo.trim()) {
+                <p>{{ parrafo }}</p>
+              }
+            }
+          </div>
+
+          <ion-button expand="block" class="ion-margin-top" (click)="empezarPreguntas()">
+            {{ t.terminarLeer }}
+          </ion-button>
+        </div>
+      }
+
+      @if (estado.paso === 'respondiendo') {
+        <div class="preguntas">
+
+          <div class="progreso">
+            <span class="progreso-texto">{{ t.preguntaDe(estado.indicePregunta + 1, estado.preguntas.length) }}</span>
+            <div class="progreso-puntos">
+              @for (pregunta of estado.preguntas; track pregunta.id; let i = $index) {
+                <span
+                  class="punto"
+                  [class.activo]="i === estado.indicePregunta"
+                  [class.contestado]="estado.respuestas[i] !== null"
+                ></span>
+              }
+            </div>
+          </div>
+
+          @if (estado.texto) {
+            <ion-button fill="clear" size="small" class="volver-texto" (click)="volverAlTexto()">
+              {{ t.volverTexto }}
+            </ion-button>
+          }
+
+          @let pregunta = estado.preguntas[estado.indicePregunta];
+          <div class="pregunta">
+            <p class="enunciado">{{ pregunta.enunciado }}</p>
+
+            <ion-radio-group
+              [value]="estado.respuestas[estado.indicePregunta]"
+              (ionChange)="seleccionarRespuesta(estado.indicePregunta, $event.detail.value)"
+            >
+              @for (opcion of pregunta.opciones; track $index; let j = $index) {
+                <ion-item lines="none">
+                  <ion-radio [value]="j" justify="start" labelPlacement="end">
+                    {{ opcion }}
+                  </ion-radio>
+                </ion-item>
+              }
+            </ion-radio-group>
+          </div>
+
+          <div class="navegacion-preguntas">
+            @if (estado.indicePregunta > 0) {
+              <ion-button fill="outline" (click)="anteriorPregunta()">
+                <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+                {{ t.anterior }}
+              </ion-button>
+            }
+
+            @if (!esUltimaPregunta(estado)) {
+              <ion-button
+                [disabled]="estado.respuestas[estado.indicePregunta] === null"
+                (click)="siguientePregunta()"
+              >
+                {{ t.siguiente }}
+                <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+              </ion-button>
+            } @else {
+              <ion-button
+                color="success"
+                [disabled]="!todasContestadas(estado)"
+                (click)="corregir()"
+              >
+                {{ t.corregir }}
+              </ion-button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (estado.paso === 'corregido') {
+        <div class="correccion">
+          <h2 class="paso-centrado">{{ t.correctas(estado.aciertos, estado.preguntas.length) }}</h2>
+          @if (estado.tono) {
+            <p class="mensaje-tono">{{ t.mensaje[estado.tono] }}</p>
+          }
+
+          <ion-list>
+            @for (pregunta of estado.preguntas; track pregunta.id; let i = $index) {
+              <ion-item
+                lines="full"
+                [class.acierto]="estado.respuestas[i] === pregunta.respuestaCorrecta"
+                [class.fallo]="estado.respuestas[i] !== pregunta.respuestaCorrecta"
+              >
+                <ion-label class="ion-text-wrap">
+                  <p class="enunciado">{{ i + 1 }}. {{ pregunta.enunciado }}</p>
+                  <p>{{ t.tuRespuesta }} {{ pregunta.opciones[estado.respuestas[i]!] }}</p>
+                  @if (estado.respuestas[i] !== pregunta.respuestaCorrecta) {
+                    <p>{{ t.correctaEs }} {{ pregunta.opciones[pregunta.respuestaCorrecta] }}</p>
+                  }
+                  @if (pregunta.citaTexto) {
+                    <blockquote class="cita-texto">"{{ pregunta.citaTexto }}"</blockquote>
+                  }
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+
+          <ion-button expand="block" class="ion-margin-top" (click)="otroTexto()">
+            {{ t.siguienteLectura }}
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="irAHome()">
+            {{ t.volverInicio }}
+          </ion-button>
+        </div>
+      }
+
+  </ion-content>
+
+}
+}

@@ -1,0 +1,33 @@
+.error {
+  color: var(--ion-color-danger, #eb445a);
+  font-weight: bold;
+}
+
+.tabla-variables {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 13px;
+
+  th,
+  td {
+    border: 1px solid var(--ion-color-light-shade, #d7d8da);
+    padding: 4px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--ion-color-light, #f4f5f8);
+  }
+}
+
+.json-completo {
+  max-height: 400px;
+  overflow: auto;
+  background: var(--ion-color-light, #f4f5f8);
+  padding: 8px;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

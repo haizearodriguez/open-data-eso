@@ -1,0 +1,112 @@
+@if (estado$ | async; as estado) {
+
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Panel de centro</ion-title>
+      @if (estado.paso === 'panel') {
+        <ion-button slot="end" fill="clear" (click)="salir()">Salir</ion-button>
+      }
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+
+    @if (estado.paso === 'cargando-sesion') {
+      <div class="paso-centrado">
+        <ion-spinner></ion-spinner>
+      </div>
+    }
+
+    <!-- Login de personal de centro / Educación -- email + contraseña real, -->
+    <!-- a diferencia de alumnado (que entra solo con un código). -->
+    @if (estado.paso === 'login') {
+      <div class="login">
+        <h1>Acceso de centro</h1>
+        <p class="explicacion">
+          Para personal docente y de Educación. Si todavía no tienes acceso,
+          contacta con el equipo del proyecto.
+        </p>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input
+            type="email"
+            [(ngModel)]="email"
+            placeholder="centro@ejemplo.eus"
+            (keyup.enter)="entrar()"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Contraseña</ion-label>
+          <ion-input
+            type="password"
+            [(ngModel)]="password"
+            (keyup.enter)="entrar()"
+          ></ion-input>
+        </ion-item>
+
+        @if (estado.error) {
+          <p class="error">{{ estado.error }}</p>
+        }
+
+        <ion-button
+          expand="block"
+          class="ion-margin-top"
+          [disabled]="!loginValido"
+          (click)="entrar()"
+        >
+          Entrar
+        </ion-button>
+      </div>
+    }
+
+    @if (estado.paso === 'cargando-datos') {
+      <div class="paso-centrado">
+        <ion-spinner></ion-spinner>
+        <p>Cargando resumen...</p>
+      </div>
+    }
+
+    @if (estado.paso === 'error') {
+      <div class="paso-centrado">
+        <p class="error">{{ estado.error }}</p>
+        <ion-button expand="block" (click)="reintentar()">Reintentar</ion-button>
+      </div>
+    }
+
+    @if (estado.paso === 'panel') {
+      <div class="panel">
+
+        @if (estado.resumen.length === 0) {
+          <div class="paso-centrado">
+            <h2>Todavía no hay datos</h2>
+            <p>En cuanto el alumnado de tu centro haga ejercicios, verás aquí el resumen.</p>
+          </div>
+        } @else {
+
+          <p class="centro-nombre">{{ estado.resumen[0].centroNombre }}</p>
+          <p class="explicacion">
+            Medias agregadas por curso y grupo -- nunca resultados individuales de ningún alumno.
+          </p>
+
+          <ion-list>
+            @for (fila of estado.resumen; track fila.curso + fila.grupo + fila.materia) {
+              <ion-item lines="full">
+                <ion-label>
+                  <p class="etiqueta">{{ fila.curso }}º ESO · Grupo {{ fila.grupo }} · {{ etiquetaMateria[fila.materia] ?? fila.materia }}</p>
+                  <h2>
+                    {{ fila.porcentajeAciertos ?? '--' }}% de aciertos
+                    <span class="num-resultados">({{ fila.numResultados }} ejercicio{{ fila.numResultados === 1 ? '' : 's' }})</span>
+                  </h2>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        }
+      </div>
+    }
+
+  </ion-content>
+
+}
